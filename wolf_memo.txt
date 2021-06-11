@@ -1,0 +1,20 @@
+url_rntry: 入れるのがURLじゃない問題
+正規表現(regex)で
+https://docs.python.org/ja/3/library/re.html
+
+Listboxの体裁
+
+Livechatが終わった後プログラムキルでなく初期化にする
+mainから各ウィジェットを初期化している部分を切り出す
+init_widgetという名前にしてしまう 対になるdestroy_widgetを実装
+destroy->initで初期化
+
+対になるならクラス化　Widgetsクラスを作ってroot livechat ...
+諸々をself.で持たせる
+loggerを設定
+https://docs.python.org/ja/3/howto/logging.html
+ベタの頭でいい
+裏に存在する状態になる
+→実際にloggingを使いたい時は
+loggerもclassのメンバに持たせたり
+
