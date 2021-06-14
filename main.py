@@ -47,8 +47,10 @@ def update_listbox(chatdata):
         comment = str(c.message)
         if comment.startswith(prefix):
             if comment not in ReqList:
-                listbox.insert(tk.END, comment.replace(prefix, ''))
-                print(f"{c.datetime} [{c.author.name}]- {c.message}")
+                request = comment.replace(prefix, '')
+                ReqList.append(request)
+                listbox.insert(tk.END, request)
+                # print(f"{c.datetime} [{c.author.name}]- {c.message}")
         chatdata.tick()
 
 
@@ -121,7 +123,6 @@ def main():
     listbox2.config(yscrollcommand=scroll_bar2.set)
 
     listbox.bind("<Double-Button-1>", listbox_dbclick)
-    listbox.bind("<Button-3>", listbox_rclick)
     listbox2.bind("<Double-Button-1>", listbox2_dbclick)
 
     root.after(1, is_livechat_alive)
