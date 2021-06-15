@@ -41,7 +41,7 @@ def is_livechat_alive():
 def update_listbox(chatdata):
     global listbox
     global ReqList
-    prefix = ""
+    prefix = "【リクエスト】"
     print("update listbox")
     for c in chatdata.items:
         comment = str(c.message)
@@ -57,9 +57,27 @@ def update_listbox(chatdata):
 def init_livechat():
     global livechat
     global url_entry
+    global listbox
+    global listbox2
+    global ReqList
+    listbox.delete(0, tk.END)
+    listbox2.delete(0, tk.END)
+    ReqList = []
     livechat = LiveChat(video_id=str(url_entry.get()).replace(
         'https://www.youtube.com/watch?v=', ''), callback=update_listbox)
     print("init livechat")
+
+
+def pause_livechat():
+    global livechat
+    livechat.pause()
+    print("stop callback")
+
+
+def resume_livechat():
+    global livechat
+    livechat.resume()
+    print("resume callback")
 
 
 def listbox_dbclick(event):
@@ -91,22 +109,28 @@ def main():
     # rootメインウィンドウの設定
     root = tk.Tk()
     root.title("YouTubeRequestViewer")
-    root.geometry("640x320")
+    root.geometry("480x360")
+    root.resizable(False, False)
 
     # メインフレームの作成と設置
     frame1 = ttk.Frame(root)
     frame1.pack(padx=20, pady=10)
     frame2 = ttk.Frame(root)
-    frame2.pack(padx=20, pady=10)
+    frame2.pack(padx=20, pady=0)
+    frame_main = ttk.Frame(root)
+    frame_main.pack(padx=20, pady=10)
 
     # 各種ウィジェットの作成・設置
     url_entry = ttk.Entry(frame1, text="URL")
-    startbutton = ttk.Button(
-        frame1, text="Start", command=init_livechat)
-    startbutton.pack(side='left')
+    start_button = ttk.Button(frame1, text="Start", command=init_livechat)
+    pause_button = ttk.Button(frame2, text="Pause", command=pause_livechat)
+    resume_button = ttk.Button(frame2, text="Resume", command=resume_livechat)
     url_entry.pack(side='left')
+    start_button.pack(side='left')
+    pause_button.pack(side='left')
+    resume_button.pack(side='left')
 
-    scrollbar_frame = ttk.Frame(frame2)
+    scrollbar_frame = ttk.Frame(frame_main)
     scrollbar_frame.grid(row=1, column=0, columnspan=2)
     listbox = tk.Listbox(scrollbar_frame, width=30, height=15)
     listbox.pack(side='left', fill=tk.BOTH)
@@ -114,7 +138,7 @@ def main():
     scroll_bar.pack(side='right', fill=tk.Y)
     listbox.config(yscrollcommand=scroll_bar.set)
 
-    scrollbar_frame2 = ttk.Frame(frame2)
+    scrollbar_frame2 = ttk.Frame(frame_main)
     scrollbar_frame2.grid(row=1, column=2, columnspan=2)
     listbox2 = tk.Listbox(scrollbar_frame2, width=30, height=15)
     listbox2.pack(side='left')
