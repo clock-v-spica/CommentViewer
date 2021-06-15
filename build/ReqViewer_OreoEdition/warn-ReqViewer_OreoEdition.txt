@@ -48,3 +48,4 @@ missing module named curio - imported by sniffio._impl (delayed, conditional), h
 missing module named trio - imported by httpcore._backends.trio (top-level), httpx._utils (delayed, conditional), httpx._transports.asgi (delayed, conditional)
 missing module named brotli - imported by httpx._decoders (optional)
 missing module named 'typing.io' - imported by importlib.resources (top-level)
+missing module named typing_extensions - imported by C:\Users\clock\Documents\program\CommentViewer\main.py (top-level)
