@@ -1,5 +1,6 @@
 import pytchat
 import time
+import random
 
 import logging
 import sys
@@ -82,6 +83,20 @@ def resume_livechat():
     print("resume callback")
 
 
+def random_select():
+    global listbox
+    target_index = random.randrange(listbox.size())
+    listbox.select_clear(0, tk.END)
+    listbox.selection_set(target_index)
+    print(target_index)
+    print("random picked")
+
+
+def setlist_clear():
+    global listbox2
+    listbox2.delete(0, tk.END)
+
+
 def listbox_dbclick(event):
     global listbox
     global listbox2
@@ -99,7 +114,8 @@ def listbox_rclick(event):
 
 def listbox2_dbclick(event):
     global listbox2
-    listbox2.delete(0, tk.END)
+    target_index = listbox2.curselection()
+    listbox2.delete(target_index)
 
 
 def main():
@@ -131,11 +147,15 @@ def main():
     start_button = ttk.Button(frame1, text="Start", command=init_livechat)
     pause_button = ttk.Button(frame2, text="Pause", command=pause_livechat)
     resume_button = ttk.Button(frame2, text="Resume", command=resume_livechat)
+    random_button = ttk.Button(frame2, text="Random", command=random_select)
+    clear_button = ttk.Button(frame2, text="SetClear", command=setlist_clear)
     url_entry.pack(side='left')
     pf_entry.pack(side='left')
     start_button.pack(side='left')
     pause_button.pack(side='left')
     resume_button.pack(side='left')
+    random_button.pack(side='left')
+    clear_button.pack(side='left')
 
     scrollbar_frame = ttk.Frame(frame_main)
     scrollbar_frame.grid(row=1, column=0, columnspan=2)
