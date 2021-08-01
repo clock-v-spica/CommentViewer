@@ -1,5 +1,5 @@
 import pytchat
-import time
+import datetime
 import random
 
 import logging
@@ -7,7 +7,7 @@ import sys
 import os
 
 import tkinter as tk
-from tkinter import ttk
+from tkinter import StringVar, ttk
 
 from pytchat.core_multithread.livechat import LiveChat
 
@@ -23,11 +23,14 @@ from pytchat.core_multithread.livechat import LiveChat
 
 livechat = None
 root = None
-listbox = None
-listbox2 = None
-url_entry = None
-pf_entry = None
+listbox = None  # req list
+listbox2 = None  # set list
+listbox3 = None  # new song list
+url_entry = None  # url entry
+pf_entry = None  # prefix entry
 ReqList = []
+
+rb_value = None
 
 
 def is_livechat_alive():
@@ -62,9 +65,11 @@ def init_livechat():
     global url_entry
     global listbox
     global listbox2
+    global listbox3
     global ReqList
     listbox.delete(0, tk.END)
     listbox2.delete(0, tk.END)
+    listbox3.delete(0, tk.END)
     ReqList = []
     livechat = LiveChat(video_id=str(url_entry.get()).replace(
         'https://www.youtube.com/watch?v=', ''), callback=update_listbox)
@@ -100,10 +105,25 @@ def setlist_clear():
 def listbox_dbclick(event):
     global listbox
     global listbox2
+    global listbox3
+    global rb_value
+
     target_index = listbox.curselection()
-    listbox2.insert(tk.END, str(listbox.get(target_index)))
-    selected_index = tk.ACTIVE
-    listbox.delete(selected_index)
+    value = rb_value.get()
+
+    if value == 'A':
+        listbox2.insert(tk.END, str(listbox.get(target_index)))
+        selected_index = tk.ACTIVE
+        listbox.delete(selected_index)
+        print(value)
+    elif value == 'B':
+        listbox.delete(target_index)
+        print(value)
+    else:
+        listbox3.insert(tk.END, str(listbox.get(target_index)))
+        selected_index = tk.ACTIVE
+        listbox.delete(selected_index)
+        print(value)
 
 
 def listbox_rclick(event):
@@ -113,9 +133,31 @@ def listbox_rclick(event):
 
 
 def listbox2_dbclick(event):
+    global listbox
     global listbox2
     target_index = listbox2.curselection()
-    listbox2.delete(target_index)
+    listbox.insert(tk.END, str(listbox2.get(target_index)))
+    selected_index = tk.ACTIVE
+    listbox2.delete(selected_index)
+
+
+def listbox3_dbclick(event):
+    global listbox
+    global listbox3
+    target_index = listbox3.curselection()
+    listbox.insert(tk.END, str(listbox3.get(target_index)))
+    selected_index = tk.ACTIVE
+    listbox3.delete(selected_index)
+
+
+def export_new():
+    global listbox3
+    time = datetime.datetime.now()
+    filename = time.strftime('%Y-%m-%d') + '.txt'
+    export_list = list(listbox3.get(0, tk.END))
+    with open(filename, 'w') as f:
+        for d in export_list:
+            f.write("%s\n" % d)
 
 
 def main():
@@ -125,10 +167,13 @@ def main():
     global pf_entry
     global listbox
     global listbox2
+    global listbox3
+    global rb_value
+
     # rootメインウィンドウの設定
     root = tk.Tk()
     root.title("YouTubeRequestViewer")
-    root.geometry("480x540")
+    root.geometry("640x540")
     root.resizable(False, False)
 
     # メインフレームの作成と設置
@@ -149,6 +194,7 @@ def main():
     resume_button = ttk.Button(frame2, text="Resume", command=resume_livechat)
     random_button = ttk.Button(frame2, text="Random", command=random_select)
     clear_button = ttk.Button(frame2, text="SetClear", command=setlist_clear)
+    export_button = ttk.Button(frame2, text="ExportNew", command=export_new)
     url_entry.pack(side='left')
     pf_entry.pack(side='left')
     start_button.pack(side='left')
@@ -156,6 +202,32 @@ def main():
     resume_button.pack(side='left')
     random_button.pack(side='left')
     clear_button.pack(side='left')
+    export_button.pack(side='left')
+
+    rb_value = tk.StringVar()
+    rb_value.set('A')
+
+    rb1 = ttk.Radiobutton(
+        frame2,
+        text='Done',
+        value='A',
+        variable=rb_value)
+
+    rb2 = ttk.Radiobutton(
+        frame2,
+        text='Delete',
+        value='B',
+        variable=rb_value)
+
+    rb3 = ttk.Radiobutton(
+        frame2,
+        text='New Song',
+        value='C',
+        variable=rb_value)
+
+    rb1.pack(side='left')
+    rb2.pack(side='left')
+    rb3.pack(side='left')
 
     scrollbar_frame = ttk.Frame(frame_main)
     scrollbar_frame.grid(row=1, column=0, columnspan=2)
@@ -175,8 +247,18 @@ def main():
     scroll_bar2.pack(side='right', fill=tk.Y)
     listbox2.config(yscrollcommand=scroll_bar2.set)
 
+    scrollbar_frame3 = ttk.Frame(frame_main)
+    scrollbar_frame3.grid(row=1, column=4, columnspan=2)
+    listbox3 = tk.Listbox(scrollbar_frame3, width=18,
+                          height=17, font=("Meiryo", 12))
+    listbox3.pack(side='left', fill=tk.BOTH)
+    scroll_bar3 = tk.Scrollbar(scrollbar_frame3, command=listbox3.yview)
+    scroll_bar3.pack(side='right', fill=tk.Y)
+    listbox3.config(yscrollcommand=scroll_bar3.set)
+
     listbox.bind("<Double-Button-1>", listbox_dbclick)
     listbox2.bind("<Double-Button-1>", listbox2_dbclick)
+    listbox3.bind("<Double-Button-1>", listbox3_dbclick)
 
     root.after(1, is_livechat_alive)
     root.mainloop()
